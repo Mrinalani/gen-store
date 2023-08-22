@@ -1,0 +1,152 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeneralStore</title>
+</head>
+<body>
+
+    <form id="form" action="" onsubmit="SaveToLocalStorage(event)">
+        <label> ItemName</label>
+        <input type="text" name="itemName" id="itemName">
+
+        <label> Description</label>
+        <input type="text" name="description" id="description">
+
+        <label> Price</label>
+        <input type="number" name="price" id="price">
+
+        <label> Quantity</label>
+        <input type="number" name="quantity" id="quantity">
+
+       <input type="submit" value="Add Items">
+
+        <ul id="itemlist"></ul>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+    <script>
+       // Function to handle form submission
+       function SaveToLocalStorage(event) {
+            event.preventDefault();
+            const ItemName = event.target.itemName.value;
+            const Description = event.target.description.value;
+            const Price = event.target.price.value;
+            const Quantity = event.target.quantity.value;
+
+            let obj = {
+                ItemName,
+                Description,
+                Price,
+                Quantity
+            };
+            
+            // Send a POST request to create a new item
+           // axios.post("https://crudcrud.com/api/f7ac15864f6144179692f543ebc46511/appointmentDate", obj)
+           axios.post("http://localhost:3000/addInStore/items",obj)
+                .then((response) => {
+                    showUserOnScreen(response.data.newUserDetail);
+                })
+                .catch((err) => {
+                    document.body.innerHTML += '<h4>Something went wrong</h4>';
+                    console.error("Error in POST request:", err);
+                });
+
+            event.target.reset();
+        }
+
+        // Function to display an item on the screen
+        function showUserOnScreen(obj) {
+            // ... Your existing code for displaying an item ...
+            const parentElement = document.getElementById('itemlist')
+            const children = document.createElement('li')
+            children.textContent = obj.ItemName+" - "+obj.Description+" - "+obj.Price+"rs - "+obj.Quantity
+
+            const buyone = document.createElement('button')
+            buyone.textContent = 'BUY ONE'
+            buyone.addEventListener('click', ()=>{
+                updateQuantity(obj,-1)
+                parentElement.removeChild(children)
+            })
+
+            const buytwo = document.createElement('button')
+            buytwo.textContent = 'BUY TWO'
+            buytwo.addEventListener('click', ()=>{
+                updateQuantity(obj,-2)
+                parentElement.removeChild(children)
+            })
+
+            const buythree = document.createElement('button')
+            buythree.textContent = 'BUY THREE'
+            buythree.addEventListener('click', ()=>{
+                updateQuantity(obj,-3)
+                parentElement.removeChild(children)
+            })
+    
+            children.appendChild(buyone)
+            children.appendChild(buytwo)
+            children.appendChild(buythree)
+            
+            parentElement.appendChild(children)
+        }
+
+        // Function to update the quantity of an item
+         function updateQuantity(obj, qty) {
+             const oldQuantity =  parseFloat(obj.Quantity);
+     const newQuantity = oldQuantity + qty;
+
+     obj.Quantity = newQuantity;
+    obj.Quantity = newQuantity.toString();
+
+    console.log("Updating quantity:", obj.Quantity);
+
+            // ... Your existing code for updating quantity ..
+
+           // axios.put(`https://localhost:3000/putreq/inDB${obj.id}`, obj)
+           console.log(obj.id)
+           axios.put(`http://localhost:3000/putreq/inDB/${obj.id}`, obj)
+        
+                .then((response) => {
+                    console.log("PUT request successful:", response.data);
+
+                    const parentElement = document.getElementById('itemlist');
+                    parentElement.innerHTML = ''; // Clear the list
+
+                    // Fetch the updated item list after the quantity update
+                    axios.get("http://localhost:3000/getStoredProduct/fromDB")
+                        .then((response) => {
+                            console.log("GET request successful:", response.data);
+                            response.data.retrievedData.forEach((item) => {
+                                showUserOnScreen(item);
+                            });
+                        })
+                        .catch((err) => {
+                            console.error("Error in GET request:", err);
+                        });
+                })
+                .catch((err) => {
+                    console.error("Error in PUT request:", err);
+                });
+        }
+
+    //     // Initial fetch and display of items when the page loads
+        window.addEventListener("DOMContentLoaded", () => {
+            axios.get("http://localhost:3000/getStoredProduct/fromDB")
+                .then((response) => {       
+                    response.data.retrievedData.forEach((item) => {
+                        showUserOnScreen(item);
+                    });
+                })
+                .catch((err) => {
+                    console.error("Error in initial GET request:", err);
+                });
+        });
+
+    </script>
+    
+</body>
+</html>
