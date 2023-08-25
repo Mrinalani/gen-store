@@ -34,20 +34,11 @@ exports.getStoredProduct = async(req,res,next)=>{
     }
 }
 
-// exports.updateProductInDB = async(req,res,next)=>{
-//     try{
-//         // update in database
-//     }catch(error){
-//         res.status(500).json({
-//             error:error
-//         })
-//     }
-// }
 
 
 exports.updateProductInDB = async (req, res, next) => {
     try {
-        const productId = req.params.ProductId; // Assuming you're passing the product ID in the URL
+        const productId = req.params.ProductId; 
         console.log('productID:' ,productId)
         
         const updatedProduct = {

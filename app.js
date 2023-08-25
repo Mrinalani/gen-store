@@ -4,7 +4,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const sequelize = require('./util/database')
+
 const generalRoutes = require('./routes/storeRoutes')
+const waiterRoutes = require('./routes/waiterRoutes')
 
 var cors = require('cors')
 
@@ -15,6 +17,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use(waiterRoutes)
 app.use(generalRoutes)
 
 sequelize.sync()
@@ -25,6 +28,8 @@ sequelize.sync()
     .catch((err) => {
         console.error('Error syncing database:', err);
     });
+
+
 
 
 

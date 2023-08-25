@@ -30,7 +30,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
 
     <script>
-       // Function to handle form submission
        function SaveToLocalStorage(event) {
             event.preventDefault();
             const ItemName = event.target.itemName.value;
@@ -45,7 +44,6 @@
                 Quantity
             };
             
-            // Send a POST request to create a new item
            // axios.post("https://crudcrud.com/api/f7ac15864f6144179692f543ebc46511/appointmentDate", obj)
            axios.post("http://localhost:3000/addInStore/items",obj)
                 .then((response) => {
@@ -59,9 +57,7 @@
             event.target.reset();
         }
 
-        // Function to display an item on the screen
         function showUserOnScreen(obj) {
-            // ... Your existing code for displaying an item ...
             const parentElement = document.getElementById('itemlist')
             const children = document.createElement('li')
             children.textContent = obj.ItemName+" - "+obj.Description+" - "+obj.Price+"rs - "+obj.Quantity
@@ -94,7 +90,6 @@
             parentElement.appendChild(children)
         }
 
-        // Function to update the quantity of an item
          function updateQuantity(obj, qty) {
              const oldQuantity =  parseFloat(obj.Quantity);
      const newQuantity = oldQuantity + qty;
@@ -104,7 +99,6 @@
 
     console.log("Updating quantity:", obj.Quantity);
 
-            // ... Your existing code for updating quantity ..
 
            // axios.put(`https://localhost:3000/putreq/inDB${obj.id}`, obj)
            console.log(obj.id)
@@ -114,9 +108,9 @@
                     console.log("PUT request successful:", response.data);
 
                     const parentElement = document.getElementById('itemlist');
-                    parentElement.innerHTML = ''; // Clear the list
+                    parentElement.innerHTML = ''; 
 
-                    // Fetch the updated item list after the quantity update
+                
                     axios.get("http://localhost:3000/getStoredProduct/fromDB")
                         .then((response) => {
                             console.log("GET request successful:", response.data);
@@ -133,7 +127,6 @@
                 });
         }
 
-    //     // Initial fetch and display of items when the page loads
         window.addEventListener("DOMContentLoaded", () => {
             axios.get("http://localhost:3000/getStoredProduct/fromDB")
                 .then((response) => {       

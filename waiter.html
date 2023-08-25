@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Waiter</title>
+</head>
+<body>
+    <form action="" onsubmit="saveToLocalStorage(event)">
+     <label for="">ChoosePrice</label>
+     <input type="Number" name="choosePrice" id="ChoosePrice">
+
+     <label for="">ChooseDish</label>
+     <input type="text" name="chooseDish" id="ChooseDish">
+
+     <label for="tableSelect">ChooseTable</label>
+     <select name="tableSelect" id="TableSelect">
+         <option value="tableNumber1">Table 1</option>
+         <option value="tableNumber2">Table 2</option>
+         <option value="tableNumber3">Table 3</option>
+     </select>
+     
+     <input type="submit" value="Add To Bill">
+
+     <h2>Orders</h2>
+
+     <ul id="tableNumber1">Table 1</ul>
+     <ul id="tableNumber2">Table 2</ul>
+     <ul id="tableNumber3">Table 3</ul>
+    </form>
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+
+      function saveToLocalStorage(event){
+        event.preventDefault();
+
+        const Price = event.target.choosePrice.value;
+        const Dish = event.target.chooseDish.value;
+        const Table = event.target.tableSelect.value.replace("tableNumber", "");
+    
+
+        let obj = {
+            Price,
+            Dish,
+            Table
+        }
+            // console.log(obj.ChooseTable)
+        axios.post("http://localhost:3000/addOrders/inDB",obj)
+        .then((response)=>{
+            showUserOnScreen(response.data.newUserDetails)
+        }).catch((error)=>{
+            document.body.innerHTML += '<h4>Something went wrong</h4>';
+            console.error("Error in POST request:", error);
+        })
+    
+        event.target.reset()
+      }
+
+      function showUserOnScreen(obj){
+        console.log(obj)
+        const tableNumber = obj.Table
+        console.log(tableNumber)
+        const tableId = `tableNumber${tableNumber}`
+        console.log(tableId)
+       
+        const parentElement = document.getElementById(tableId)
+        const children = document.createElement('li')
+        children.textContent = `${obj.Price} - Table ${obj.Table} - ${obj.Dish}`;
+
+
+        const child = document.createElement('button')
+        child.textContent = "Delete"
+        child.onclick = ()=>{
+            deleteuser(obj)
+        parentElement.removeChild(children)
+        }
+       children.appendChild(child)
+        parentElement.appendChild(children)
+      }
+
+      function deleteuser(obj){
+        axios.delete(`http://localhost:3000/DeleteOrders/FromDB/${obj.id}`)
+        .then((response)=>{
+            console.log("data deleted successfully")
+        })
+        .catch((error)=>{
+            console.log('error in delete request', error)
+        })
+      }
+
+
+      window.addEventListener("DOMContentLoaded", ()=>{
+
+        axios.get("http://localhost:3000/getOrders/FromDB")
+        .then((response)=>{
+            response.data.retrievedData.forEach(element => {
+                showUserOnScreen(element)
+            });
+        })
+        .catch((err) => {
+            console.error("Error in initial GET request:", err);
+            });
+      })
+
+
+    </script>
+</body>
+</html>
